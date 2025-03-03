@@ -7,17 +7,13 @@ This repository contains the code for the Fraktal project, which includes both c
 - [Installation](#installation)
 - [Usage](#usage)
 - [Docker](#docker)
-- [Kubernetes](#kubernetes)
-- [Contributing](#contributing)
-- [License](#license)
-
+- [Techinical Details](#technical-details)
+- [Demo](#demo)
 ## Installation
 
 ### Prerequisites
 
 - Python 3.10 or higher
-- Docker
-- Docker Compose
 
 ### Clone the Repository
 
@@ -42,7 +38,16 @@ python -m client.main --clients smtp --file "/etc/passwd"
 The client application is based on a manager that could change to a different protocol when the current protocol is blocked. 
 
 ### Server Application
-The server application can receive and process messages or files sent by the client application. User could select to deploy all or few selective protocols on this server.
+
+#### Create certificate for HTTPS server
+The HTTPS server requires to have a TLS certificate to operate. To create a self-sign certificate, run the following commands and change the domain name to the corresponding domain.
+```sh
+openssl genpkey -algorithm RSA -out certs/server.key
+openssl req -new -key certs/server.key -out certs/server.csr -subj "/CN=your-domain.com"
+openssl x509 -req -days 365 -in certs/server.csr -signkey certs/server.key -out certs/server.crt
+```
+
+The server application can receive and process messages or files sent by the client application. User could select to deploy all or few selective protocols on this server. The message is stored in received.txt file and the files are stored in files folder.
 
 ```sh
 python -m server.main 
@@ -80,6 +85,8 @@ We use SMTP to create an email from sender to the receiver with the data attache
 
 The server just simple check for any new message after a period of time, parse the data and the attachment in the email. However, each attachment is only limited up to 25MB by Google mail service. For a large file exfiltration, the client could split the file into 25MB chunks and send it over the SMTP with the order embedded in the filename.  Then the server can parse that data and reconstruct the file based on the order. The feature is possible to implement, however, due to the time constraint, the implementation is not included in this projects. The client in this projects only support files that is less than 25MB.
 
+To create the application password for gmail account please follow the instruction [here](https://myaccount.google.com/apppasswords)
+
 ### Traffic controllers
 We provides 2 types of traffic controllers, including the packet size controller and the time controller. This is inspired by the common behavior of the IDS, which is detecting the data exfiltration based on large traffic to a destination server or high number of traffic during a period of time.
 
@@ -92,3 +99,13 @@ This can be set at client with --size [size] flag and only available for sending
 The controller creates pauses between different requests to reduce the high volumn of connection between the client and the server. This controller can be configured by specifying the maximum number of connection per seconds
 
 This can be set at client with --rate [rate] flag and only available for sending message
+
+## Demo
+This can be deployed with docker-compose by running 
+```sh
+docker-compose up
+docker compose exec client python -m client.main --clients https --message "hello"
+docker compose exec server cat received.txt 
+docker compose exec server ls files 
+docker compose exec server cat files/[your file name]
+```
