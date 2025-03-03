@@ -56,10 +56,7 @@ python -m server.main
 ### Environment variables
 The environment variables are stored in the corresponding **[server/client]/config.py** and the credential should be setup in the **.env** file
 
-One important notice is that it is recommended to use two different accounts when exfiltrating data with SMTP, since the credential of the sender is deployed into the victim environment, therefore, that mailbox is considered to be fully compromised. Hence it is not recommended to store any information in that mailbox. All the sent email will be removed immediately.
-
-Contributing
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+One important notice is that it is recommended to use two different accounts when exfiltrating data with SMTP, since the credential of the sender is deployed into the victim environment, therefore, that mailbox is considered to be fully compromised. Hence it is not recommended to store any information in that mailbox.
 
 ## Technical details
 The application tries to send data using different protocol by abusing different fields of the network packet based on the corresponding protocols.
