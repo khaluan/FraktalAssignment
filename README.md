@@ -66,6 +66,8 @@ HTTPS provides a secure communication with TLS. Therefore, it is straightforward
 
 The body of the request is used to store data. In case of sending a file, it is encoded using multi-part form. In this case the communication don't need any further encryption since the traffic is already protected with TLS. 
 
+The could be blocked if the the server is already blacklisted by the IDS, and can be detected through SNI.
+
 Further protection could be employed encrypt the SNI using the ECH extension in TLS 1.3 to further hide the traffic among benign TLS traffics. However, this is not implemented in this project due to time constraint.
 
 ### DNS
